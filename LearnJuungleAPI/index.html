@@ -7,8 +7,19 @@
 </head>
 
 <body>
+    <label for="cars">Choose an Artist:</label>
+
+    <select name="artists" id="artists">
+      <option value="photoyshop">Photoyshop</option>
+      <option value="jlv">Justin Luis Vargas</option>
+      <option value="lucivay">lucivay</option>
+    </select>
 <p id="USD">1 BCH = $?.??</p>
+<p id="PRICE">$105 = ?.???????? BCH</p>
+<p id="SATOSHIS">$105 = ?.???????? total Satoshis</p>
 <button type="button" onclick="getUSDPrice()">Coingecko</button>
+<br>
+<button type="button" onclick="login()">Log in</button>
 <br>
 <button id="Data" type="button" disabled=true onclick="getData(jsonurl)">Get Data</button>
 <br>
@@ -17,7 +28,7 @@
       <td>ID</td>
       <td>Name</td>
       <td>Dollar Amount</td>
-      <td><button id="FixAll" type="button" disabled=true>Fix All</button></td>
+      <td><button id="FixAll" type="button" onclick="fixAllPrices()" disabled=true>Fix All</button></td>
     </tr>
   </table>
 </body>

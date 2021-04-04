@@ -1,7 +1,7 @@
 var email;
 var password;
 var credentials;// = '{"email": "my-email","password":"my-password"}';
-var jwt;
+var jwt = null;
 
 
 function login()
@@ -22,6 +22,8 @@ function login()
                 console.log(JSON.stringify(data));
                 jwt = data.jwtToken;
                 console.log(jwt);
+                var priceButton = document.getElementById("FixAll");
+                priceButton.disabled = false;
             },
             error: function()
             {
