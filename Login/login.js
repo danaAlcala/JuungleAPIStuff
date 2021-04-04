@@ -20,6 +20,8 @@ function login()
             success: function(data)
             {
                 console.log(JSON.stringify(data));
+                jwt = data.jwtToken;
+                console.log(jwt);
             },
             error: function()
             {
