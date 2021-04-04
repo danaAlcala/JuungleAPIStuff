@@ -1,4 +1,5 @@
 const BCHSATOSHIS = 100000000;
+const COINGECKO = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=usd";
 
 var receivedJSONdata;
 var NFTs;
@@ -17,14 +18,21 @@ function BCHtoUSDollars(paramBCH)
     return paramBCH * BCHtoUSD;
 }
 
-function getData(paramURL)
+function getUSDPrice()
 {
-    $.getJSON("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=usd", function(data)
+    $.getJSON(COINGECKO, function(data)
     {
-        BCHtoUSD = data;
-        console.log(BCHtoUSD);
+        let BCHtoUSDdata = data;
+        let strBCHtoUSD = JSON.stringify(BCHtoUSDdata)
+        console.log(strBCHtoUSD);
+        console.log(BCHtoUSDdata["bitcoin-cash"]["usd"]);
+        BCHtoUSD = BCHtoUSDdata["bitcoin-cash"]["usd"]
     })
-    /*$.getJSON(paramURL,function(data)
+}
+
+function getNFTData(paramURL)
+{
+    $.getJSON(paramURL,function(data)
     {
         receivedJSONdata = data;
         NFTs = receivedJSONdata.nfts;
@@ -33,7 +41,7 @@ function getData(paramURL)
         {
             let tokenName = NFTs[i].tokenName;
             let tokenPrice = satoshisToBCH(NFTs[i].priceSatoshis).toString();
-            let tokenUSD = BCHtoUSDollars(tokenPrice);
+            let tokenUSD = BCHtoUSDollars(tokenPrice).toFixed(2);
             console.log(tokenName + ": " + tokenPrice + " BCH $" + tokenUSD);
             if (NFTs[i].userId !== 296)
             {
@@ -42,5 +50,13 @@ function getData(paramURL)
         }
         console.log(soldTokens);
     }
-    );*/
+    );
 }
+
+function getData(paramURL)
+{
+    getUSDPrice();
+    getNFTData(paramURL);    
+}
+
+//getData(jsonurl);
