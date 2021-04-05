@@ -35,12 +35,58 @@ var currentSATOSHIPrices =
     "lucivay": ""
 }
 
+var dropDownBox = document.getElementById("artistsdropdown");
+
+var allMyTokens = [];
+
 var receivedJSONdata;
 var NFTs;
+
 var tokenID = tokenIDs.PHOTOYSHOP;
+
+
 var jsonurl = "https://www.juungle.net/api/v1/nfts?groupTokenId=" + tokenID + MAINUSERID + AVAILABLE + NOTPURCHASED;
 var soldTokens = [];
 var BCHtoUSD = 0;
+
+var profile = dropDownBox.value;
+
+function updateFromDropDown()
+{
+    profile = dropDownBox.value;
+    updateMainTokenID();
+    updateJSONURL();
+    getUSDPrice();
+    console.log(profile);
+    console.log(tokenID);
+}
+
+function updateJSONURL()
+{
+    jsonurl = "https://www.juungle.net/api/v1/nfts?groupTokenId=" + tokenID + MAINUSERID + AVAILABLE + NOTPURCHASED;
+}
+
+function updateMainTokenID()
+{
+    switch (profile)
+    {
+        case "photoyshop":
+            {
+                tokenID = tokenIDs.PHOTOYSHOP;
+                break;
+            }
+        case "jlv":
+            {
+                tokenID = tokenIDs.JLV;
+                break;
+            }
+        case "lucivay":
+            {
+                tokenID = tokenIDs.lucivay;
+                break;
+            }
+    }
+}
 
 function satoshisToBCH(paramSatoshis)
 {
@@ -57,19 +103,46 @@ function getUSDPrice()
     $.getJSON(COINGECKO, function(data)
     {
         let BCHtoUSDdata = data;
-        let strBCHtoUSD = JSON.stringify(BCHtoUSDdata)
+
         let dataButton = document.getElementById("Data");
         let bigMoney = document.getElementById("USD");
         let preferredPrice = document.getElementById("PRICE");
         let newSatoshis = document.getElementById("SATOSHIS");
-        console.log(strBCHtoUSD);
-        console.log(BCHtoUSDdata["bitcoin-cash"]["usd"]);
+
+        let bchPrice;
+        let satoshiPrice;
+        let usdPrice;
+        
         BCHtoUSD = BCHtoUSDdata["bitcoin-cash"]["usd"];
-        currentBCHPrices.PHOTOYSHOP = (currentUSDPrices.PHOTOYSHOP / BCHtoUSD).toFixed(8);
-        currentSATOSHIPrices.PHOTOYSHOP = currentBCHPrices.PHOTOYSHOP * BCHSATOSHIS;
+        console.log(BCHtoUSD);
+
+        switch (profile)
+        {
+
+            case "photoyshop":
+                {
+                    usdPrice = currentUSDPrices.PHOTOYSHOP;
+                    break;
+                }
+            case "jlv":
+                {
+                    usdPrice = currentUSDPrices.JLV;
+                    break;
+                }
+            case "lucivay":
+                {
+                    usdPrice = currentUSDPrices.lucivay;
+                    break;
+                }
+        }
+
+        bchPrice = (usdPrice / BCHtoUSD).toFixed(8);
+        satoshiPrice = bchPrice * BCHSATOSHIS;
+        console.log(bchPrice);
+
         bigMoney.innerHTML = "1 BCH = $" + BCHtoUSD.toString();
-        preferredPrice.innerHTML = "$" + currentUSDPrices.PHOTOYSHOP.toString() + " = " + currentBCHPrices.PHOTOYSHOP.toString() + " BCH";
-        newSatoshis.innerHTML = "$" + currentUSDPrices.PHOTOYSHOP.toString() + " = " + currentSATOSHIPrices.PHOTOYSHOP.toString() + " Satoshis";
+        preferredPrice.innerHTML = "$" + usdPrice.toString() + " = " + bchPrice.toString() + " BCH";
+        newSatoshis.innerHTML = "$" + usdPrice.toString() + " = " + satoshiPrice.toString() + " Satoshis";
         dataButton.disabled = false;
     })
 }
@@ -89,6 +162,7 @@ function getNFTData(paramURL)
             let tokenUSD = BCHtoUSDollars(tokenPrice).toFixed(2);
             //console.log(tokenName + ": " + tokenPrice + " BCH $" + tokenUSD);
             buildTable(NFTID, tokenName, tokenUSD);
+            allMyTokens.push(NFTID);
             if (NFTs[i].userId !== 296)
             {
                 soldTokens.push(NFTs[i]);
@@ -96,12 +170,20 @@ function getNFTData(paramURL)
 
         }
         console.log(soldTokens);
+        console.log(allMyTokens);
+        console.log(dropDownBox.value);
     }
     );
 }
 
+function clearTable()
+{
+    $("#myTable:not(:first)").remove();
+}
+
 function getData(paramURL)
 {
+    clearTable();
     getNFTData(paramURL);    
 }
 
@@ -123,28 +205,38 @@ function buildTable(c0, c1, c2)
 
 function setPrice(paramID, paramPrice)
 {
-    $.ajax(
-        {
-            url: "https://www.juungle.net/api/v1/user/nfts/set_price",
-            headers: '{"X-Access-Token": ' + jwt.toString() +'}',
-            type: 'POST',
-            contentType: "application/json",
-            charset: "utf-8",
-            datatype: 'json',
-            data: '{"nftId": "'+paramID.toString() +'", "priceSatoshis": "' + paramPrice.toString() + '"}',
-            success: function(data)
+    var passThisData = {
+        nftId: paramID,
+        priceSatoshis: paramPrice
+      };
+    var header = {
+        "X-Access-Token": jwt
+    };
+    var priceSetCommunication = $.ajax( // This executes when setPrice() executes
             {
-                console.log(JSON.stringify(data));
-            },
-            error: function()
-            {
-                alert("Cannot set price.");
-                console.log(paramID.toString() + " " + paramPrice.toString() + " " + jwt.toString());
-            }
-        })
+                url: "https://www.juungle.net/api/v1/user/nfts/set_price",
+                headers: header,
+                type: 'POST',
+                contentType: "application/json",
+                charset: "utf-8",
+                datatype: 'json',
+                data: JSON.stringify(passThisData),
+                success: function(data)
+                {
+                    var responseHeaders = priceSetCommunication.getAllResponseHeaders();
+                    console.log(responseHeaders);
+                    console.log(JSON.stringify(data));
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr,response);
+                    console.log(xhr.responseText);
+                }
+            })
+            
 }
 
 function fixAllPrices()
 {
     setPrice(4837, currentSATOSHIPrices.PHOTOYSHOP);
 }
+getUSDPrice();
