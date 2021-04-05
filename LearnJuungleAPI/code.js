@@ -139,11 +139,7 @@ function getUSDPrice()
         }
 
         bchPrice = (usdPrice / BCHtoUSD).toFixed(8);
-<<<<<<< HEAD
         satoshiPrice = (bchPrice * BCHSATOSHIS);
-=======
-        satoshiPrice = bchPrice * BCHSATOSHIS;
->>>>>>> parent of d17432a (Non-Fungible Satoshis)
 
         switch (profile) // update client prices in BCH and Satoshis
         {
