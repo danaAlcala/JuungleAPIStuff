@@ -121,17 +121,17 @@ function buildTable(c0, c1, c2)
     cell3.innerHTML = "placeholder";    
 }
 
-function setPrice(id, price)
+function setPrice(paramID, paramPrice)
 {
     $.ajax(
         {
             url: "https://www.juungle.net/api/v1/user/nfts/set_price",
-            headers: {"X-Access-Token": jwt},
+            headers: '{"X-Access-Token": ' + jwt.toString() +'}',
             type: 'POST',
             contentType: "application/json",
             charset: "utf-8",
             datatype: 'json',
-            data: '{"id": "'+id.toString() +'", "priceSatoshis": "' + price.toString() + '"}',
+            data: '{"nftId": "'+paramID.toString() +'", "priceSatoshis": "' + paramPrice.toString() + '"}',
             success: function(data)
             {
                 console.log(JSON.stringify(data));
@@ -139,6 +139,7 @@ function setPrice(id, price)
             error: function()
             {
                 alert("Cannot set price.");
+                console.log(paramID.toString() + " " + paramPrice.toString() + " " + jwt.toString());
             }
         })
 }
