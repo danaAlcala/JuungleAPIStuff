@@ -56,7 +56,9 @@ function updateFromDropDown()
     profile = dropDownBox.value;
     updateMainTokenID();
     updateJSONURL();
+    clearTable();
     getUSDPrice();
+    
     console.log(profile);
     console.log(tokenID);
 }
@@ -116,7 +118,7 @@ function getUSDPrice()
         BCHtoUSD = BCHtoUSDdata["bitcoin-cash"]["usd"];
         console.log(BCHtoUSD);
 
-        switch (profile)
+        switch (profile) // Calculations based off of preffered USD price of client
         {
 
             case "photoyshop":
@@ -138,6 +140,30 @@ function getUSDPrice()
 
         bchPrice = (usdPrice / BCHtoUSD).toFixed(8);
         satoshiPrice = bchPrice * BCHSATOSHIS;
+
+        switch (profile) // update client prices in BCH and Satoshis
+        {
+
+            case "photoyshop":
+                {
+                    currentBCHPrices.PHOTOYSHOP = bchPrice;
+                    currentSATOSHIPrices.PHOTOYSHOP = satoshiPrice;
+                    break;
+                }
+            case "jlv":
+                {
+                    currentBCHPrices.JLV = bchPrice;
+                    currentSATOSHIPrices.JLV = satoshiPrice;
+                    break;
+                }
+            case "lucivay":
+                {
+                    currentBCHPrices.lucivay = bchPrice;
+                    currentSATOSHIPrices.lucivay = satoshiPrice;
+                    break;
+                }
+        }
+
         console.log(bchPrice);
 
         bigMoney.innerHTML = "1 BCH = $" + BCHtoUSD.toString();
@@ -178,11 +204,23 @@ function getNFTData(paramURL)
 
 function clearTable()
 {
-    $("#myTable:not(:first)").remove();
+    var tableToClear = document.getElementById("myTable");
+    let i;
+    for (i=1; i < tableToClear.rows.length;)
+    {
+        tableToClear.deleteRow(i);
+    }
+    console.log("Clear table");
+}
+
+function clearAllMyTokensArray()
+{
+    allMyTokens = [];
 }
 
 function getData(paramURL)
 {
+    clearAllMyTokensArray();
     clearTable();
     getNFTData(paramURL);    
 }
@@ -237,6 +275,31 @@ function setPrice(paramID, paramPrice)
 
 function fixAllPrices()
 {
-    setPrice(4837, currentSATOSHIPrices.PHOTOYSHOP);
+    let setThisSatoshiPrice;
+    switch (profile)
+    {
+        case "photoyshop":
+            {
+                setThisSatoshiPrice = currentSATOSHIPrices.PHOTOYSHOP;
+                break;
+            }
+        case "jlv":
+            {
+                setThisSatoshiPrice = currentSATOSHIPrices.JLV;
+                break;
+            }
+        case "lucivay":
+            {
+                setThisSatoshiPrice = currentSATOSHIPrices.lucivay;
+                break;
+            }
+    }
+    let i;
+    for (i=0; i < allMyTokens.length; i++)
+    {
+        setPrice(allMyTokens[i], setThisSatoshiPrice);
+        //console.log(allMyTokens[i]);
+    }
+    //setPrice(4837, currentSATOSHIPrices.PHOTOYSHOP);
 }
 getUSDPrice();
