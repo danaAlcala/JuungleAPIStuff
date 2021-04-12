@@ -1,4 +1,4 @@
-var numberOfPONYSold = PONY.length;
+var numberOfPONYSold = PONY.nfts.length;
 
 function totalPONYcost()
 {
@@ -6,7 +6,7 @@ function totalPONYcost()
     let totalSatoshis = 0;
     for (i=0; i < numberOfPONYSold; i++)
     {
-        totalSatoshis += PONY[i].priceSatoshis;
+        totalSatoshis += PONY.nfts[i].priceSatoshis;
     }
     return totalSatoshis;
 }
@@ -16,7 +16,7 @@ function medianPONYcost()
     let i;
     for (i=0; i < numberOfPONYSold; i++)
     {
-        newArray.push(PONY[i].priceSatoshis);
+        newArray.push(PONY.nfts[i].priceSatoshis);
     }
     newArray.sort((a, b) => a - b);
     for (i=0; i < newArray.length; i++)
@@ -39,7 +39,7 @@ function printAllPrices()
     let i;
     for (i=0; i < numberOfPONYSold; i++)
     {
-        console.log(PONY[i].priceSatoshis);
+        console.log(PONY.nfts[i].priceSatoshis);
     }
 }
 
